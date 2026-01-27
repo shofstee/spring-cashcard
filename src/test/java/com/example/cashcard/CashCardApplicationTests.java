@@ -18,11 +18,11 @@ class CashCardApplicationTests
 	{
 		final String expected = """
 			{
-			    "id":99,
+			    "id":"ff793947-c8a3-4a7b-9f34-1f131b1d9444",
 			    "amount":123.45
 			}
 			""";
-		restTemplate.get().uri("/cashcards/99", String.class)
+		restTemplate.get().uri("/cashcards/ff793947-c8a3-4a7b-9f34-1f131b1d9444", String.class)
 			.exchange()
 			.expectStatus()
 			.is2xxSuccessful()
@@ -33,7 +33,7 @@ class CashCardApplicationTests
 	@Test
 	void shouldNotReturnACashCardWithAnUnknownId()
 	{
-		restTemplate.get().uri("/cashcards/100", String.class)
+		restTemplate.get().uri("/cashcards/6db400ac-2b2a-4b56-8205-f42a90e8fb89", String.class)
 			.exchange()
 			.expectStatus()
 			.isNotFound()

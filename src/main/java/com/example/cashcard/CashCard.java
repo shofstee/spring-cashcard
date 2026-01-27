@@ -1,5 +1,7 @@
 package com.example.cashcard;
 
-record CashCard(Long id, Double amount)
+import java.util.UUID;
+
+record CashCard(UUID id, Double amount)
 {
 }
