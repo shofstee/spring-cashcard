@@ -12,18 +12,19 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/cashcards")
 public class CashCardController
 {
+	private final CashCardRepository cashCardRepository;
+
+	public CashCardController(final CashCardRepository cashCardRepository)
+	{
+		this.cashCardRepository = cashCardRepository;
+	}
+
 	@GetMapping("/{id}")
 	private ResponseEntity<CashCard> findById(@PathVariable final UUID id)
 	{
-		if (id.equals(UUID.fromString("ff793947-c8a3-4a7b-9f34-1f131b1d9444")))
-		{
-			final CashCard cashCard = new CashCard(UUID.fromString("ff793947-c8a3-4a7b-9f34-1f131b1d9444"), 123.45);
-			return ResponseEntity.ok(cashCard);
-		}
-		else
-		{
-			return ResponseEntity.notFound().build();
-		}
+		return cashCardRepository.findById(id)
+			.map(ResponseEntity::ok)
+			.orElseGet(() -> ResponseEntity.notFound().build());
 	}
 }
 

@@ -4,6 +4,6 @@ import java.util.UUID;
 
 import org.springframework.data.repository.CrudRepository;
 
-interface CashCardRepository/// extends CrudRepository<CashCard, UUID>
+public interface CashCardRepository extends CrudRepository<CashCard, UUID>
 {
 }
