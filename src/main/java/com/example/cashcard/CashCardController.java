@@ -2,6 +2,9 @@ package com.example.cashcard;
 
 import java.util.UUID;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,10 +13,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.uuid.Generators;
+import com.fasterxml.uuid.impl.TimeBasedEpochGenerator;
+
 @RestController
 @RequestMapping("/cashcards")
 public class CashCardController
 {
+	private static final TimeBasedEpochGenerator timebasedEpochGenerator = Generators.timeBasedEpochGenerator();
+
 	private final CashCardRepository cashCardRepository;
 
 	public CashCardController(final CashCardRepository cashCardRepository)
@@ -29,11 +37,21 @@ public class CashCardController
 			.orElseGet(() -> ResponseEntity.notFound().build());
 	}
 
+	@GetMapping()
+	private ResponseEntity<Iterable<CashCard>> findAll(final Pageable pageable)
+	{
+		final var page = cashCardRepository.findAll(PageRequest.of(
+			pageable.getPageNumber(),
+			pageable.getPageSize(),
+			pageable.getSortOr(Sort.by(Sort.Direction.ASC, "amount"))));
+		return ResponseEntity.ok(page.getContent());
+	}
+
 	@PostMapping
 	private ResponseEntity<Void> createCashCard(@RequestBody final CashCard cashCard)
 	{
 		final CashCard newCashCard = CashCard.builder()
-				.id(UUID.randomUUID())
+				.id(timebasedEpochGenerator.generate())
 				.amount(cashCard.amount())
 				.build();
 		cashCardRepository.save(newCashCard);

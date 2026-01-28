@@ -10,7 +10,7 @@ import org.springframework.data.relational.core.mapping.Table;
 
 @Builder
 @Table
-record CashCard(
+public record CashCard(
 	@Id
 	UUID id,
 	Double amount
