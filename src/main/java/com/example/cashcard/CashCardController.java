@@ -8,6 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -71,7 +72,7 @@ public class CashCardController
 		@NonNull final Principal principal)
 	{
 		final var existingCard = cashCardRepository.findById(requestedId);
-		if (existingCard.isPresent() && !existingCard.get().owner().equals(principal.getName()))
+		if (existingCard.isEmpty() || !existingCard.get().owner().equals(principal.getName()))
 		{
 			return ResponseEntity.notFound().build();
 		}
@@ -82,6 +83,21 @@ public class CashCardController
 			.owner(principal.getName())
 			.build();
 		cashCardRepository.save(newCashCard);
+		return ResponseEntity.noContent().build();
+	}
+
+	@DeleteMapping("/{requestedId}")
+	private ResponseEntity<Void> upsertCashCard(
+		@PathVariable @NonNull final UUID requestedId,
+		@NonNull final Principal principal)
+	{
+		final var existingCard = cashCardRepository.findByIdAndOwner(requestedId, principal.getName());
+		if (existingCard.isEmpty())
+		{
+			return ResponseEntity.noContent().build();
+		}
+
+		cashCardRepository.delete(existingCard.get());
 		return ResponseEntity.noContent().build();
 	}
 }

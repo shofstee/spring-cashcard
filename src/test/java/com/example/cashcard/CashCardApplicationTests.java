@@ -110,7 +110,7 @@ class CashCardApplicationTests
 	{
 		final CashCard newCashCard = new CashCard(UUID.fromString("019c062e-677f-76d8-b2f4-61c06487a294"), 250.00, null);
 		restTestClient.put().uri("/cashcards/019c062e-677f-76d8-b2f4-61c06487a294", Void.class)
-			.header(HttpHeaders.AUTHORIZATION, createBasicAuthHeader("sarah2", "123abc"))
+			.header(HttpHeaders.AUTHORIZATION, createBasicAuthHeader("pete1", "123abc"))
 			.body(newCashCard)
 			.exchange()
 			.expectStatus()
@@ -227,6 +227,61 @@ class CashCardApplicationTests
 			.exchange()
 			.expectStatus()
 			.isNotFound()
+			.expectBody()
+			.isEmpty();
+	}
+
+	@Test
+	@DirtiesContext
+	void shouldDeleteAnExistingCashCard()
+	{
+		restTestClient.delete().uri("/cashcards/019c062e-677f-76d8-b2f4-61c06487a294")
+			.header(HttpHeaders.AUTHORIZATION, createBasicAuthHeader("sarah1", "abc123"))
+			.exchange()
+			.expectStatus()
+			.isNoContent()
+			.expectBody()
+			.isEmpty();
+
+		restTestClient.get().uri("/cashcards/019c062e-677f-76d8-b2f4-61c06487a294", String.class)
+			.header(HttpHeaders.AUTHORIZATION, createBasicAuthHeader("sarah1", "abc123"))
+			.exchange()
+			.expectStatus()
+			.isNotFound();
+	}
+
+	@Test
+	@DirtiesContext
+	void shouldNotDeleteAnExistingCashCardFromOtherOwner()
+	{
+		restTestClient.delete().uri("/cashcards/019c062e-677f-76d8-b2f4-61c06487a294")
+			.header(HttpHeaders.AUTHORIZATION, createBasicAuthHeader("pete1", "123abc"))
+			.exchange()
+			.expectStatus()
+			.isNoContent()
+			.expectBody()
+			.isEmpty();
+
+		restTestClient.get().uri("/cashcards/019c062e-677f-76d8-b2f4-61c06487a294", String.class)
+			.header(HttpHeaders.AUTHORIZATION, createBasicAuthHeader("sarah1", "abc123"))
+			.exchange()
+			.expectStatus()
+			.is2xxSuccessful()
+			.expectBody()
+			.json("""
+				{"id":"019c062e-677f-76d8-b2f4-61c06487a294","amount":123.45,"owner":"sarah1"}
+				""");
+	}
+
+	@Test
+	@DirtiesContext
+	void shouldNotDeleteAnNonExistingCashCard()
+	{
+		restTestClient.delete().uri("/cashcards/98e31102-d24f-43c4-9471-55b7b0a7a130")
+			.header(HttpHeaders.AUTHORIZATION, createBasicAuthHeader("sarah1", "abc123"))
+			.exchange()
+			.expectStatus()
+			.isNoContent()
 			.expectBody()
 			.isEmpty();
 	}

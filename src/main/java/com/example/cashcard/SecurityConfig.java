@@ -37,8 +37,8 @@ class SecurityConfig
 			.password(passwordEncoder.encode("abc123"))
 			.roles("CARD-OWNER") // new role
 			.build();
-		final UserDetails sarah2 = users
-			.username("sarah2")
+		final UserDetails pete1 = users
+			.username("pete1")
 			.password(passwordEncoder.encode("123abc"))
 			.roles("CARD-OWNER") // new role
 			.build();
@@ -47,7 +47,7 @@ class SecurityConfig
 			.password(passwordEncoder.encode("qrs456"))
 			.roles("NON-OWNER") // new role
 			.build();
-		return new InMemoryUserDetailsManager(sarah, sarah2, hankOwnsNoCards);
+		return new InMemoryUserDetailsManager(sarah, pete1, hankOwnsNoCards);
 	}
 
 	@Bean
