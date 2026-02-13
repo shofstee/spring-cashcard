@@ -2,6 +2,7 @@ package com.example.cashcard;
 
 import java.util.Base64;
 import java.util.List;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,6 +75,47 @@ class CashCardApplicationTests
 					.getPath()
 					.matches("^/cashcards/" + REGEXP_UUIDv7 + "$"),
 				"Location header with new CashCard URI");
+	}
+
+	@Test
+	@DirtiesContext
+	void shouldUpdateAnExistingCashCard()
+	{
+		final CashCard newCashCard = new CashCard(UUID.fromString("019c062e-677f-76d8-b2f4-61c06487a294"), 250.00, null);
+		restTestClient.put().uri("/cashcards/019c062e-677f-76d8-b2f4-61c06487a294", Void.class)
+			.header(HttpHeaders.AUTHORIZATION, createBasicAuthHeader("sarah1", "abc123"))
+			.body(newCashCard)
+			.exchange()
+			.expectStatus()
+			.isNoContent()
+			.expectHeader()
+			.doesNotExist(LOCATION)
+			.returnResult()
+			.getResponseHeaders();
+
+		restTestClient.get().uri("/cashcards/019c062e-677f-76d8-b2f4-61c06487a294", String.class)
+			.header(HttpHeaders.AUTHORIZATION, createBasicAuthHeader("sarah1", "abc123"))
+			.exchange()
+			.expectStatus()
+			.is2xxSuccessful()
+			.expectBody()
+			.json("""
+				{"id":"019c062e-677f-76d8-b2f4-61c06487a294","amount":250.0}
+				""");
+	}
+
+	@Test
+	@DirtiesContext
+	void shouldUpdateAnExistingCashCardFromAnotherPrincipal()
+	{
+		final CashCard newCashCard = new CashCard(UUID.fromString("019c062e-677f-76d8-b2f4-61c06487a294"), 250.00, null);
+		restTestClient.put().uri("/cashcards/019c062e-677f-76d8-b2f4-61c06487a294", Void.class)
+			.header(HttpHeaders.AUTHORIZATION, createBasicAuthHeader("sarah2", "123abc"))
+			.body(newCashCard)
+			.exchange()
+			.expectStatus()
+			.isNotFound()
+			.expectHeader();
 	}
 
 	@Test
