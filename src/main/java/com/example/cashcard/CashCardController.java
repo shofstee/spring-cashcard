@@ -1,5 +1,6 @@
 package com.example.cashcard;
 
+import java.security.Principal;
 import java.util.UUID;
 
 import org.springframework.data.domain.PageRequest;
@@ -30,17 +31,17 @@ public class CashCardController
 	}
 
 	@GetMapping("/{id}")
-	private ResponseEntity<CashCard> findById(@PathVariable final UUID id)
+	private ResponseEntity<CashCard> findById(@PathVariable final UUID id, final Principal principal)
 	{
-		return cashCardRepository.findById(id)
+		return cashCardRepository.findByIdAndOwner(id, principal.getName())
 			.map(ResponseEntity::ok)
 			.orElseGet(() -> ResponseEntity.notFound().build());
 	}
 
 	@GetMapping()
-	private ResponseEntity<Iterable<CashCard>> findAll(final Pageable pageable)
+	private ResponseEntity<Iterable<CashCard>> findAll(final Pageable pageable, final Principal principal)
 	{
-		final var page = cashCardRepository.findAll(PageRequest.of(
+		final var page = cashCardRepository.findByOwner(principal.getName(), PageRequest.of(
 			pageable.getPageNumber(),
 			pageable.getPageSize(),
 			pageable.getSortOr(Sort.by(Sort.Direction.ASC, "amount"))));
@@ -48,12 +49,13 @@ public class CashCardController
 	}
 
 	@PostMapping
-	private ResponseEntity<Void> createCashCard(@RequestBody final CashCard cashCard)
+	private ResponseEntity<Void> createCashCard(@RequestBody final CashCard cashCard, final Principal principal)
 	{
 		final CashCard newCashCard = CashCard.builder()
-				.id(timebasedEpochGenerator.generate())
-				.amount(cashCard.amount())
-				.build();
+			.id(timebasedEpochGenerator.generate())
+			.amount(cashCard.amount())
+			.owner(principal.getName())
+			.build();
 		cashCardRepository.save(newCashCard);
 		return ResponseEntity.created(
 				java.net.URI.create("/cashcards/" + newCashCard.id()))

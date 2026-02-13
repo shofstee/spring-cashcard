@@ -24,7 +24,7 @@ class CashCardJsonTest
 	@Test
 	void cashCardSerializationTest() throws IOException
 	{
-		final CashCard cashCard = new CashCard(UUID.fromString("019c062e-677f-76d8-b2f4-61c06487a294"), 123.45);
+		final CashCard cashCard = new CashCard(UUID.fromString("019c062e-677f-76d8-b2f4-61c06487a294"), 123.45, "Sarah1");
 		assertThat(json.write(cashCard)).isStrictlyEqualToJson("single.json");
 		assertThat(json.write(cashCard)).hasJsonPathValue("@.id");
 		assertThat(json.write(cashCard)).extractingJsonPathValue("@.id")
@@ -40,11 +40,12 @@ class CashCardJsonTest
 		final String expected = """
 			{
 			    "id":"019c062e-677f-76d8-b2f4-61c06487a294",
-			    "amount":123.45
+			    "amount":123.45,
+			    "owner": "Sarah1"
 			}
 			""";
 		assertThat(json.parse(expected))
-			.isEqualTo(new CashCard(UUID.fromString("019c062e-677f-76d8-b2f4-61c06487a294"), 123.45));
+			.isEqualTo(new CashCard(UUID.fromString("019c062e-677f-76d8-b2f4-61c06487a294"), 123.45, "Sarah1"));
 
 		assertThat(json.parseObject(expected).id()).isEqualTo(UUID.fromString("019c062e-677f-76d8-b2f4-61c06487a294"));
 		assertThat(json.parseObject(expected).amount()).isEqualTo(123.45);
@@ -54,9 +55,9 @@ class CashCardJsonTest
 	void cashCardListSerializationTest() throws IOException
 	{
 		final var cashCards = Arrays.array(
-			new CashCard(UUID.fromString("019c062e-677f-76d8-b2f4-61c06487a294"), 123.45),
-			new CashCard(UUID.fromString("019c062f-463f-7287-be6b-d75290581aaf"), 100.00),
-			new CashCard(UUID.fromString("019c062f-7af1-7098-9f0c-f6ad013d55ea"), 150.00));
+			new CashCard(UUID.fromString("019c062e-677f-76d8-b2f4-61c06487a294"), 123.45, "Sarah1"),
+			new CashCard(UUID.fromString("019c062f-463f-7287-be6b-d75290581aaf"), 100.00, "Sarah1"),
+			new CashCard(UUID.fromString("019c062f-7af1-7098-9f0c-f6ad013d55ea"), 150.00, "Sarah1"));
 		assertThat(jsonList.write(cashCards)).isStrictlyEqualToJson("list.json");
 	}
 
@@ -65,16 +66,16 @@ class CashCardJsonTest
 	{
 		final String expected = """
 			[
-			   { "id": "019c062e-677f-76d8-b2f4-61c06487a294", "amount": 123.45 },
-			   { "id": "019c062f-463f-7287-be6b-d75290581aaf", "amount": 100.00 },
-			   { "id": "019c062f-7af1-7098-9f0c-f6ad013d55ea", "amount": 150.00 }
+			   { "id": "019c062e-677f-76d8-b2f4-61c06487a294", "amount": 123.45,"owner": "Sarah1" },
+			   { "id": "019c062f-463f-7287-be6b-d75290581aaf", "amount": 100.00,"owner": "Sarah1" },
+			   { "id": "019c062f-7af1-7098-9f0c-f6ad013d55ea", "amount": 150.00,"owner": "Sarah1" }
 			]
 			""";
 
 		final var cashCards = Arrays.array(
-			new CashCard(UUID.fromString("019c062e-677f-76d8-b2f4-61c06487a294"), 123.45),
-			new CashCard(UUID.fromString("019c062f-463f-7287-be6b-d75290581aaf"), 100.00),
-			new CashCard(UUID.fromString("019c062f-7af1-7098-9f0c-f6ad013d55ea"), 150.00));
+			new CashCard(UUID.fromString("019c062e-677f-76d8-b2f4-61c06487a294"), 123.45, "Sarah1"),
+			new CashCard(UUID.fromString("019c062f-463f-7287-be6b-d75290581aaf"), 100.00, "Sarah1"),
+			new CashCard(UUID.fromString("019c062f-7af1-7098-9f0c-f6ad013d55ea"), 150.00, "Sarah1"));
 
 		assertThat(jsonList.parse(expected)).isEqualTo(cashCards);
 	}

@@ -1,5 +1,17 @@
 [
-  {"id": "019c062e-677f-76d8-b2f4-61c06487a294", "amount": 123.45 },
-  {"id": "019c062f-463f-7287-be6b-d75290581aaf", "amount": 100.00 },
-  {"id": "019c062f-7af1-7098-9f0c-f6ad013d55ea", "amount": 150.00 }
+  {
+    "id": "019c062e-677f-76d8-b2f4-61c06487a294",
+    "amount": 123.45,
+    "owner": "Sarah1"
+  },
+  {
+    "id": "019c062f-463f-7287-be6b-d75290581aaf",
+    "amount": 100.00,
+    "owner": "Sarah1"
+  },
+  {
+    "id": "019c062f-7af1-7098-9f0c-f6ad013d55ea",
+    "amount": 150.00,
+    "owner": "Sarah1"
+  }
 ]
